@@ -1,0 +1,28 @@
+Project 1: Unix/Linux Shell
+
+Contact
+Author:Paul Abili
+Campus ID:QD36016
+Email:pabili1@umbc.edu
+
+Overview
+Within Project 1, students are tasked to develop a Linux shell. Throughout Part 1, 2 and 3 the functionality of the increases with each step.
+
+Installation and Setup
+Prerequisites:C Standard Libary
+
+Build and Compile
+Build project with: make
+Run code with: ./simple_shell [args]
+
+User-Space Drivers
+
+Testing
+
+Troubleshoting
+I am very confused on how a shell runs each commands.
+I understand that the shell is only respoisble for parsing and not the logic; confused on how to run the commands.
+
+References
+
+External Sources
