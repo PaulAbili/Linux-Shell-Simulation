@@ -20,6 +20,7 @@ In this project, you are going to implement a number of functions to
 create a simple linux shell interface to perform basic linux commands
 */
 
+
 /*
 DEFINE THE FUNCTION PROTOTYPES
 user_prompt_loop()
@@ -28,8 +29,12 @@ parse_command()
 execute_command()
 */
 
-int main(int argc, char **argv)
-{
+void user_prompt_loop();
+char* get_user_command();
+char** parse_command(char* usrInput);
+void execute_command(char** parsed);
+
+int main(int argc, char **argv){
     /*
     Write the main function that checks the number of argument passed to ensure 
     no command-line arguments are passed; if the number of argument is greater 
@@ -43,21 +48,27 @@ int main(int argc, char **argv)
     */
 	//Check to see if more than 1 argument
 	//if so exit with stderr error
-	
 	//user_prompt_loop()
+	if(argc > 1){
+		fprintf(stderr, "Too many arguments");
+	} else {
+		user_prompt_loop();
+	}
 }
 
-/*
-user_prompt_loop():
-Get the user input using a loop until the user exits, prompting the user for a command.
-Gets command and sends it to a parser, then compares the first element to the two
-different commands ("/proc", and "exit"). If it's none of the commands, 
-send it to the execute_command() function. If the user decides to exit, then exit 0 or exit 
-with the user given value. 
-*/
+   /*
+   user_prompt_loop():
 
-/*user_prompt_loop()*/
-//{
+   Get the user input using a loop until the user exits, prompting the user for a command.
+   Gets command and sends it to a parser, then compares the first element to the two
+   different commands ("/proc", and "exit"). If it's none of the commands, 
+   send it to the execute_command() function. If the user decides to exit, then exit 0 or exit 
+   with the user given value. 
+   */
+
+   /*user_prompt_loop()*/
+
+void user_prompt_loop(){
     // initialize variables
 
     /*
@@ -67,7 +78,10 @@ with the user given value.
         3. parse the user input using parse_command() function 
         Example: 
             user input: "ls -la"
-            parsed output: ["ls", "-la", NULL]
+        char* ptr;
+        char** ptr2 = ptr;
+        return ptr2;
+            parsed output:["ls", "-la", NULL]
         4. compare the first element of the parsed output to "/proc"and "exit"
         5. if the first element is "/proc" then you have the open the /proc file system 
            to read from it
@@ -109,12 +123,35 @@ with the user given value.
     ENTER YOUR CODE HERE
     */
 	// print >>
-	// char* = get_user_command();
+	// char* usrInput = get_user_command();
 	// char[] parsed = parse_comand(usrInput);
 	// if parsed[0] is exit and parsed[1] is NULL & parsed[2] doesn't exist
 	// execute_command(parsed);
+	int count = 0;
+	int i = 0;
+	int j = 0;
+	while(count == 0){
+		i = 0;
+		j = 0;
+		printf(">>\n");
+		char* usrInput = get_user_command();
+		char** parsed = parse_command(usrInput); 
+		while(j == 0){
+			if(strcmp(parsed[i], "NULL") == 0){
+				j = 1;
+			}
+			i = i + 1;
+		}
 
-//}
+		if(strcmp(parsed[0], "exit") == 0 &&
+			 strcmp(parsed[1], "NULL") == 0 && (i == 2)){
+			//Do Nothing
+			count = 1;
+		} else {
+			execute_command(parsed);
+		}
+	}
+}
 
 /*
 get_user_command():
@@ -122,7 +159,7 @@ Take input of arbitrary size from the user and return to the user_prompt_loop()
 */
 
 /*get_user_command()*/
-//{
+char* get_user_command(){
     /*
     Functions you may need: 
         malloc(), realloc(), getline(), fgetc(), or any other similar functions
@@ -133,7 +170,8 @@ Take input of arbitrary size from the user and return to the user_prompt_loop()
     */
 	//get user input
 	//return the string
-//}
+	return "";
+}
 
 /*
 parse_command():
@@ -147,7 +185,7 @@ Example:
 */
 
 /*parse_command()*/
-//{
+char** parse_command(char* usrInput){
     /*
     Functions you may need: 
         malloc(), realloc(), free(), strlen(), first_unquoted_space(), unescape()
@@ -159,8 +197,11 @@ Example:
 	//remove spaces
 	//parse string into array
 	//check if first is exit or proc
-	//return array	
-//}
+	//return array
+	char* strings[] = {"", " "};
+	char** stringsPointer = strings;
+	return stringsPointer;
+}
 
 /*
 execute_command():
@@ -169,7 +210,7 @@ fork a process and execute the parsed command inside the child process
 */
 
 /*execute_command()*/
-//{
+void execute_command(char** parsed){
     /*
     Functions you may need: 
         fork(), execvp(), waitpid(), and any other useful function
@@ -181,4 +222,4 @@ fork a process and execute the parsed command inside the child process
 	//execute command
 	//(somehow) use fork to create a process
 
-//}
+}
