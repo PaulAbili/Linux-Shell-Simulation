@@ -1,3 +1,4 @@
+
 /*
 project: 01
 author:Paul Abili
@@ -30,8 +31,8 @@ execute_command()
 */
 
 void user_prompt_loop();
-char* get_user_command();
-char** parse_command(char* usrInput);
+void get_user_command(char* usrInput);
+void parse_command(char* usrInput, char* parsed[]);
 void execute_command(char** parsed);
 
 int main(int argc, char **argv){
@@ -78,9 +79,6 @@ void user_prompt_loop(){
         3. parse the user input using parse_command() function 
         Example: 
             user input: "ls -la"
-        char* ptr;
-        char** ptr2 = ptr;
-        return ptr2;
             parsed output:["ls", "-la", NULL]
         4. compare the first element of the parsed output to "/proc"and "exit"
         5. if the first element is "/proc" then you have the open the /proc file system 
@@ -129,29 +127,36 @@ void user_prompt_loop(){
 	// execute_command(parsed);
 	int count = 0;
 	int i = 0;
-	int j = 0;
+	int temp = 0;
+	int temp2 = 0;
 	while(count == 0){
-		i = 0;
-		j = 0;
-		printf(">>\n");
-		char* usrInput = get_user_command();
-		char** parsed = parse_command(usrInput); 
-		while(j == 0){
-			if(strcmp(parsed[i], "NULL") == 0){
-				j = 1;
-			}
-			i = i + 1;
+		printf(">> ");
+		char* usrInput = NULL;
+		size_t size = 10;
+	        usrInput = malloc(sizeof(char) * size);
+		get_user_command(usrInput);
+		char* parsed[strlen(usrInput)];
+		for(i = 0; i < strlen(usrInput); i++){
+			parsed[i] = malloc(sizeof(char) * (strlen(usrInput) + 6));
 		}
+		parse_command(usrInput, parsed);
 
-		if(strcmp(parsed[0], "exit") == 0 &&
-			 strcmp(parsed[1], "NULL") == 0 && (i == 2)){
+		if(strcmp(parsed[0], "\"exit\"\0") == 0 &&
+			 strcmp(parsed[1], "NULL\0") == 0){
 			//Do Nothing
 			count = 1;
 		} else {
 			execute_command(parsed);
 		}
+
+		for(i = 0; i < strlen(usrInput); i++){
+                        free(parsed[i]);
+                }
+
+		free(usrInput);
 	}
 }
+
 
 /*
 get_user_command():
@@ -159,18 +164,17 @@ Take input of arbitrary size from the user and return to the user_prompt_loop()
 */
 
 /*get_user_command()*/
-char* get_user_command(){
+void get_user_command(char* usrInput){
     /*
-    Functions you may need: 
+    Functions you may need:
         malloc(), realloc(), getline(), fgetc(), or any other similar functions
     */
 
     /*
     ENTER YOUR CODE HERE
     */
-	//get user input
-	//return the string
-	return "";
+	size_t size = 10;
+	getline(&usrInput, &size, stdin); //gets user input and places it into usrInput
 }
 
 /*
@@ -185,22 +189,60 @@ Example:
 */
 
 /*parse_command()*/
-char** parse_command(char* usrInput){
+void parse_command(char* usrInput, char* parsed[]){
     /*
     Functions you may need: 
         malloc(), realloc(), free(), strlen(), first_unquoted_space(), unescape()
     */
 
-    /*
+   /*
     ENTER YOUR CODE HERE
     */
 	//remove spaces
 	//parse string into array
 	//check if first is exit or proc
 	//return array
-	char* strings[] = {"", " "};
-	char** stringsPointer = strings;
-	return stringsPointer;
+
+	int i = 0; // index of iteration
+	int j = 0; // Size of word
+	int k = 0; // index in array
+	size_t size = sizeof(char) * 2;
+	char* quotes = malloc(size);
+	char* substring;
+	strncpy(quotes, "\"\0", size);
+	while(i < strlen(usrInput)){
+		if(isspace(usrInput[i]) != 0){
+			if(j != 0){
+				substring = malloc(sizeof(char) * (j + 6)); // allocates space for the substring
+				strncpy(substring, usrInput + (i - j), j); // copies parsed info to substring
+
+				strncpy(parsed[k], quotes, size); // copies quote into parsed index
+				strcat(parsed[k], substring); // concats parsed string and quot
+				strcat(parsed[k], quotes); // adds a quote to the end
+				k++; // increments index
+				j = 0; // restarts size counter
+				free(substring);
+			}
+
+		} else {
+			j++;
+		}
+	i++;
+	}
+
+	if(j != 0){ //what if it ends without a space
+		substring = malloc(sizeof(char) * (j + 6)); // allocates space for the substring
+                strncpy(substring, usrInput + (i - j), j); // copies parsed info to substring
+                strncpy(parsed[k], quotes, size); // copies quote into parsed index
+                strcat(parsed[k], substring); // concats parsed string and quot
+                strcat(parsed[k], quotes); // adds a quote to the end
+                k++; // increments index
+                j = 0; // restarts size counter
+                free(substring);
+	}
+
+	strncpy(parsed[k], "NULL\0", sizeof(char) * 5); //Adding NULL
+	free(quotes);
 }
 
 /*
