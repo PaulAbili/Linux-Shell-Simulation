@@ -33,7 +33,7 @@ execute_command()
 void user_prompt_loop();
 void get_user_command(char* usrInput);
 void parse_command(char* usrInput, char* parsed[]);
-void execute_command(char** parsed);
+void execute_command(char* parsed[]);
 
 int main(int argc, char **argv){
     /*
@@ -127,23 +127,28 @@ void user_prompt_loop(){
 	// execute_command(parsed);
 	int count = 0;
 	int i = 0;
-	int temp = 0;
-	int temp2 = 0;
+	int j = 0; //keeps track to the size of the array
 	while(count == 0){
 		printf(">> ");
-		char* usrInput = NULL;
+		char* usrInput = NULL; //Contains original Usr Input;
 		size_t size = 10;
-	        usrInput = malloc(sizeof(char) * size);
-		get_user_command(usrInput);
-		char* parsed[strlen(usrInput)];
-		for(i = 0; i < strlen(usrInput); i++){
+	        usrInput = malloc(sizeof(char) * size); // allocates size 
+		get_user_command(usrInput); // gets user input
+
+		char* parsed[strlen(usrInput)]; // creates array for parsed
+		for(i = 0; i < strlen(usrInput); i++){ //allocates space
 			parsed[i] = malloc(sizeof(char) * (strlen(usrInput) + 6));
 		}
 		parse_command(usrInput, parsed);
 
+		j = 0;
+		while(strcmp(parsed[j], "\0") != 0){
+			j++; // might be unnecessary
+		}
+
 		if(strcmp(parsed[0], "\"exit\"\0") == 0 &&
-			 strcmp(parsed[1], "NULL\0") == 0){
-			//Do Nothing
+			 strcmp(parsed[1], "\0") == 0){
+			//Stops loop
 			count = 1;
 		} else {
 			execute_command(parsed);
@@ -152,7 +157,6 @@ void user_prompt_loop(){
 		for(i = 0; i < strlen(usrInput); i++){
                         free(parsed[i]);
                 }
-
 		free(usrInput);
 	}
 }
@@ -213,10 +217,11 @@ void parse_command(char* usrInput, char* parsed[]){
 	while(i < strlen(usrInput)){
 		if(isspace(usrInput[i]) != 0){
 			if(j != 0){
-				substring = malloc(sizeof(char) * (j + 6)); // allocates space for the substring
+				substring = malloc(sizeof(char) * (j + 8)); // allocates space for the substring
 				strncpy(substring, usrInput + (i - j), j); // copies parsed info to substring
 
-				strncpy(parsed[k], quotes, size); // copies quote into parsed index
+				substring[j] = '\0';
+				strncpy(parsed[k], quotes, 2); // copies quote into parsed index
 				strcat(parsed[k], substring); // concats parsed string and quot
 				strcat(parsed[k], quotes); // adds a quote to the end
 				k++; // increments index
@@ -231,17 +236,18 @@ void parse_command(char* usrInput, char* parsed[]){
 	}
 
 	if(j != 0){ //what if it ends without a space
-		substring = malloc(sizeof(char) * (j + 6)); // allocates space for the substring
+		substring = malloc(sizeof(char) * (j + 8)); // allocates space for the substring
                 strncpy(substring, usrInput + (i - j), j); // copies parsed info to substring
-                strncpy(parsed[k], quotes, size); // copies quote into parsed index
+
+		substring[j] = '\0';
+                strncpy(parsed[k], quotes, 2); // copies quote into parsed index
                 strcat(parsed[k], substring); // concats parsed string and quot
                 strcat(parsed[k], quotes); // adds a quote to the end
                 k++; // increments index
                 j = 0; // restarts size counter
                 free(substring);
 	}
-
-	strncpy(parsed[k], "NULL\0", sizeof(char) * 5); //Adding NULL
+	strncpy(parsed[k], "\0", 1);
 	free(quotes);
 }
 
@@ -252,7 +258,7 @@ fork a process and execute the parsed command inside the child process
 */
 
 /*execute_command()*/
-void execute_command(char** parsed){
+void execute_command(char* parsed[]){
     /*
     Functions you may need: 
         fork(), execvp(), waitpid(), and any other useful function
