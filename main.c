@@ -48,6 +48,7 @@ int main(int argc, char **argv){
     */
 	//Check to see if more than 1 argument
 	//if so exit with stderr error
+
 	//user_prompt_loop()
 	if(argc > 1){
 		fprintf(stderr, "Too many arguments");
@@ -290,6 +291,7 @@ void execute_command(char* new_parsed[]){
 		printf("Fork Failed\n");
 	} else if(pid == 0){ // 0 means child process
 		execvp(new_parsed[0], new_parsed);
+		exit(1); // exec didn't find the command
 	} else{
 		wait(NULL);
 	}
