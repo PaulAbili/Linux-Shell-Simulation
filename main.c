@@ -29,9 +29,10 @@ parse_command()
 execute_command()
 */
 
-void user_prompt_loop();
-void parse_command(char* usrInput, char*** parsed);
-void execute_command(char** parsed);
+int user_prompt_loop();
+void get_user_command(char**);
+void parse_command(char*, char***);
+void execute_command(char**);
 
 int main(int argc, char **argv){
     /*
@@ -51,8 +52,10 @@ int main(int argc, char **argv){
 	if(argc > 1){
 		fprintf(stderr, "Too many arguments");
 	} else {
-		user_prompt_loop();
+		while(user_prompt_loop() == 0){ } // do nothing!
 	}
+
+	return 0;
 }
 
    /*
@@ -67,7 +70,7 @@ int main(int argc, char **argv){
 
    /*user_prompt_loop()*/
 
-void user_prompt_loop(){
+int user_prompt_loop(){
     // initialize variables
 
     /*
@@ -110,6 +113,7 @@ void user_prompt_loop(){
 
     /*
     Functions you may need:
+                                //strncpy(substring, usrInput + (i - j), j);
         get_user_command(), parse_command(), execute_command(), strcmp(), strcat(), 
         strlen(), strncmp(), fopen(), fclose(), getline(), isdigit(), atoi(), fgetc(), 
         or any other useful functions
@@ -123,64 +127,66 @@ void user_prompt_loop(){
 	// char[] parsed = parse_comand(usrInput);
 	// if parsed[0] is exit and parsed[1] is NULL & parsed[2] doesn't exist
 	// execute_command(parsed);
-	int count = 0;
 	int i = 0;
 	int j = 0; //keeps track to the size of the array
 	int k = 0;
-	size_t size = 0;
-	while(count == 0){
-		printf(">> ");
-		char* usrInput = NULL;
-		getline(&usrInput, &size, stdin); // Input gathering
-		//char* parsed[strlen(usrInput)]; // creates array for parsed
-		char** parsed = (char**)malloc(sizeof(char*) * strlen(usrInput)); 
-		for(i = 0; i < strlen(usrInput); i++){ //allocates space
-			parsed[i] = malloc(sizeof(char*) * (strlen(usrInput) + 2)); // Allocates array space --line marked!!!!
-		}
+	printf(">> ");
+	char* usrInput = NULL;
+	get_user_command(&usrInput); // user input
 
-		parse_command(usrInput, &parsed);
+	char** parsed = (char**)malloc(sizeof(char*) * strlen(usrInput));
 
-
-		j = 0;
-		while(strcmp(parsed[j], "\0") != 0){
-			printf("Parsed: %s\n", parsed[j]);
-			j++; // size of new array;
-		}
-
-		if(strcmp(parsed[0], "exit\0") == 0 &&
-			 strcmp(parsed[1], "\0") == 0){
-			//Stops loop
-			count = 1;
-		} else {
- 		        char* new_parsed[j + 1];
-        		for(i = 0; i < j; i++){ //j -> j- 1
-				k = 0;
-				while(strcmp(parsed[i] + k, "\0") != 0){
-					k++;
-				}
-                		new_parsed[i] = malloc(sizeof(char) * (k + 1));
-				strncpy(new_parsed[i], parsed[i],(k + 1));
-		        }
-			new_parsed[j] = NULL;
-
-			execute_command(new_parsed);
-
-			for(i = 0; i < j+1; i++){
-				free(new_parsed[i]);
-				new_parsed[i] = NULL;
-			}
-
-		}
-
-		for(i = 0; i < strlen(usrInput); i++){
-                        free(parsed[i]); // Frees Parsed Array
-			parsed[i] = NULL;
-                }
-		free(parsed);
-		parsed = NULL;
-		free(usrInput); //Frees UserInput
-		usrInput = NULL;
+	for(i = 0; i < strlen(usrInput); i++){ //allocates space
+		parsed[i] = malloc(sizeof(char*) * (strlen(usrInput) + 3)); 
 	}
+
+	parse_command(usrInput, &parsed);
+
+	j = 0;
+	while(strcmp(parsed[j], "\0") != 0){
+		j++; // size of new array;
+	}
+	if(strcmp(parsed[0], "exit\0") == 0 && strcmp(parsed[1], "\0") == 0){
+		//Stops loop
+		for(i = 0; i < strlen(usrInput); i++){
+                	free(parsed[i]); // Frees Parsed Array
+                	parsed[i] = NULL;
+        	}
+        	free(parsed);
+        	parsed = NULL;
+        	free(usrInput); //Frees UserInput
+        	usrInput = NULL;
+		return 1;
+	} else {
+	        char* new_parsed[j + 1];
+        	for(i = 0; i < j; i++){ //j -> j- 1
+			k = 0;
+			while(strcmp(parsed[i] + k, "\0") != 0){
+					k++;
+			}
+                	new_parsed[i] = malloc(sizeof(char) * (k + 1));
+			memcpy(new_parsed[i], parsed[i],(k + 1));
+//			printf("Parsed:%s\n", parsed[i]);
+//			printf("New Parsed:%s\n", new_parsed[i]);
+
+	        }
+		new_parsed[j] = NULL;
+		execute_command(new_parsed);
+		for(i = 0; i < j; i++){
+			free(new_parsed[i]);
+			new_parsed[i] = NULL;
+		}
+	}
+
+	for(i = 0; i < strlen(usrInput); i++){
+        	free(parsed[i]); // Frees Parsed Array
+		parsed[i] = NULL;
+        }
+	free(parsed);
+	parsed = NULL;
+	free(usrInput); //Frees UserInput
+	usrInput = NULL;
+	return 0;
 }
 
 
@@ -190,7 +196,7 @@ Take input of arbitrary size from the user and return to the user_prompt_loop()
 */
 
 /*get_user_command()*/
-//void get_user_command(char* usrInput){
+void get_user_command(char** usrInput){
     /*
     Functions you may need:
         malloc(), realloc(), getline(), fgetc(), or any other similar functions
@@ -199,9 +205,9 @@ Take input of arbitrary size from the user and return to the user_prompt_loop()
     /*
     ENTER YOUR CODE HERE
     */
-//	size_t size = 0;
-//	getline(&usrInput, &size, stdin); //gets user input and places it into usrInput
-//}
+	size_t size = 0;
+	getline(&(*usrInput), &size, stdin); //gets user input and places it into usrInput
+}
 
 /*
 parse_command():
@@ -215,7 +221,7 @@ Example:
 */
 
 /*parse_command()*/
-void parse_command(char* usrInput, char** parsed[]){
+void parse_command(char* usrInput, char*** parsed){
     /*
     Functions you may need: 
         malloc(), realloc(), free(), strlen(), first_unquoted_space(), unescape()
@@ -232,37 +238,30 @@ void parse_command(char* usrInput, char** parsed[]){
 	int i = 0; // index of iteration
 	int j = 0; // Size of word
 	int k = 0; // index in array
-	char* substring;
 	while(i < strlen(usrInput) - 1){
 		if(isspace(usrInput[i]) != 0){
 			if(j != 0){
-				substring = malloc(sizeof(char) * (j + 3)); // allocates space for the substring
-				strncpy(substring, usrInput + (i - j), j); // copies parsed info to substring
-
-				substring[j] = '\0';
-				strcat((*parsed)[k], substring); // concats parsed string and quot
+				//strncpy(substring, usrInput + (i - j), j);
+				//strncpy((*parsed)[k], substring); //copies parsed info to substring & adds nullptr
+				memcpy((*parsed)[k], usrInput + (i - j), j);
+               			(**parsed)[j + 1] = '\0';
 				k++; // increments index
 				j = 0; // restarts size counter
-				free(substring);
-				substring = NULL;
 			}
 
 		} else {
 			j++;
 		}
-	i++;
+		i++;
 	}
 
 	if(j != 0){ //what if it ends without a space
-		substring = malloc(sizeof(char) * (j + 3)); // allocates space for the substring
-                strncpy(substring, usrInput + (i - j), j); // copies parsed info to substring
-
-		substring[j] = '\0';
-                strcat((*parsed)[k], substring); // concats parsed string and quot
-                k++; // increments index
-                j = 0; // restarts size counter
-                free(substring);
-		substring = NULL;
+		//strncpy(substring, usrInput + (i - j), j);
+        	//strcpy((*parsed)[k], substring); // copies parsed info to substring & adds nullptr
+		memcpy((*parsed)[k], usrInput + (i - j), j);
+		(**parsed)[j] = '\0';
+		k++; // increments index
+        	j = 0; // restarts size counter
 	}
 	strcpy((*parsed)[k], "\0");
 }
@@ -297,4 +296,3 @@ void execute_command(char* new_parsed[]){
 
 
 }
-
