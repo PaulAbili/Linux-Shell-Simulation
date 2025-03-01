@@ -167,8 +167,6 @@ int user_prompt_loop(){
 			}
                 	new_parsed[i] = malloc(sizeof(char) * (k + 1));
 			memcpy(new_parsed[i], parsed[i],(k + 1));
-//			printf("Parsed:%s\n", parsed[i]);
-//			printf("New Parsed:%s\n", new_parsed[i]);
 
 	        }
 		new_parsed[j] = NULL;
@@ -239,13 +237,21 @@ void parse_command(char* usrInput, char*** parsed){
 	int i = 0; // index of iteration
 	int j = 0; // Size of word
 	int k = 0; // index in array
+	int l = 0;
 	while(i < strlen(usrInput) - 1){
 		if(isspace(usrInput[i]) != 0){
+			if(j != 0 && l == 0){
+				memcpy((*parsed)[k], usrInput + (i - j), j);
+                                (*parsed)[k][j] = '\0';
+                                k++; // increments index
+                                j = 0; // restarts size counter
+				l = 1;
+			}
 			if(j != 0){
 				//strncpy(substring, usrInput + (i - j), j);
 				//strncpy((*parsed)[k], substring); //copies parsed info to substring & adds nullptr
 				memcpy((*parsed)[k], usrInput + (i - j), j);
-               			(**parsed)[j + 1] = '\0';
+               			(*parsed)[k][j + 1] = '\0';
 				k++; // increments index
 				j = 0; // restarts size counter
 			}
@@ -260,7 +266,7 @@ void parse_command(char* usrInput, char*** parsed){
 		//strncpy(substring, usrInput + (i - j), j);
         	//strcpy((*parsed)[k], substring); // copies parsed info to substring & adds nullptr
 		memcpy((*parsed)[k], usrInput + (i - j), j);
-		(**parsed)[j] = '\0';
+		(*parsed)[k][j] = '\0';
 		k++; // increments index
         	j = 0; // restarts size counter
 	}
