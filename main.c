@@ -29,10 +29,11 @@ parse_command()
 execute_command()
 */
 
-int user_prompt_loop();
+void user_prompt_loop();
 void get_user_command(char**);
 void parse_command(char*, char***);
-void execute_command(char**);
+int execute_command(char**);
+void free_var(char***, int);
 
 int main(int argc, char **argv){
     /*
@@ -46,14 +47,11 @@ int main(int argc, char **argv){
     /*
     ENTER YOUR CODE HERE
     */
-	//Check to see if more than 1 argument
-	//if so exit with stderr error
-
 	//user_prompt_loop()
 	if(argc > 1){
-		fprintf(stderr, "Too many arguments");
+		fprintf(stderr, "Too many arguments"); // Does not support command line arguments
 	} else {
-		while(user_prompt_loop() == 0){ } // do nothing!
+		user_prompt_loop(); // loop!
 	}
 
 	return 0;
@@ -71,7 +69,7 @@ int main(int argc, char **argv){
 
    /*user_prompt_loop()*/
 
-int user_prompt_loop(){
+void user_prompt_loop(){
     // initialize variables
 
     /*
@@ -123,69 +121,82 @@ int user_prompt_loop(){
     /*
     ENTER YOUR CODE HERE
     */
-	// print >>
-	// char* usrInput = get_user_command();
-	// char[] parsed = parse_comand(usrInput);
-	// if parsed[0] is exit and parsed[1] is NULL & parsed[2] doesn't exist
-	// execute_command(parsed);
-	int i = 0;
-	int j = 0; //keeps track to the size of the array
-	int k = 0;
-	printf(">> ");
-	char* usrInput = NULL;
-	get_user_command(&usrInput); // user input
+	int i = 0; // used in for loops
+	int j = 0; // keeps track to the size of the array
+	int k = 0; // used to keep track of how big new parsed should be
+	int loop = 0; //used for looping
+	int historyCounter = 0; // used to keep track of inputs
+	FILE* filePtr = fopen(".421sh", "w+"); // history file pointer
+	while(loop == 0){
+		char* usrInput = NULL;
+		printf(">> "); // user prompt 
+		get_user_command(&usrInput); // user input (also gathers new line)
+		if(strcmp(usrInput, "\n\0") == 0){ // user to handle undefined behavior for entering only "\n"
+			fputs(usrInput, filePtr); // adds newline
+			free(usrInput); // frees usrInput
+			historyCounter++; // increments history
+		} else {
+			char** parsed = (char**)malloc(sizeof(char*) * strlen(usrInput)); // allocates extra space just in case ;)
 
-	char** parsed = (char**)malloc(sizeof(char*) * strlen(usrInput));
-
-	for(i = 0; i < strlen(usrInput); i++){ //allocates space
-		parsed[i] = malloc(sizeof(char*) * (strlen(usrInput) + 3)); 
-	}
-
-	parse_command(usrInput, &parsed);
-
-	j = 0;
-	while(strcmp(parsed[j], "\0") != 0){
-		j++; // size of new array;
-	}
-	if(strcmp(parsed[0], "exit\0") == 0 && strcmp(parsed[1], "\0") == 0){
-		//Stops loop
-		for(i = 0; i < strlen(usrInput); i++){
-                	free(parsed[i]); // Frees Parsed Array
-                	parsed[i] = NULL;
-        	}
-        	free(parsed);
-        	parsed = NULL;
-        	free(usrInput); //Frees UserInput
-        	usrInput = NULL;
-		return 1;
-	} else {
-	        char* new_parsed[j + 1];
-        	for(i = 0; i < j; i++){ //j -> j- 1
-			k = 0;
-			while(strcmp(parsed[i] + k, "\0") != 0){
-					k++;
+			for(i = 0; i < strlen(usrInput); i++){ //allocates space
+				parsed[i] = malloc(sizeof(char*) * (strlen(usrInput) + 3)); // allocates space
 			}
-                	new_parsed[i] = malloc(sizeof(char) * (k + 1));
-			memcpy(new_parsed[i], parsed[i],(k + 1));
 
-	        }
-		new_parsed[j] = NULL;
-		execute_command(new_parsed);
-		for(i = 0; i < j; i++){
-			free(new_parsed[i]);
-			new_parsed[i] = NULL;
+			parse_command(usrInput, &parsed); //parses usrInput
+
+			j = 0; 
+			while(strcmp(parsed[j], "\0") != 0){
+				j++; // size of new array;
+			}
+
+			if(strcmp(parsed[0], "exit\0") == 0 && strcmp(parsed[1], "\0") == 0){
+			//Stops loop
+				free_var(&parsed, strlen(usrInput)); // if the command is exit clears previously used **
+        			free(usrInput); //Frees UserInput
+				fclose(filePtr);
+				loop = 1;
+			} else {
+				char** new_parsed  = (char**) malloc(sizeof(char*) * (j + 1));
+       				for(i = 0; i < j; i++){ // Not j + 1 bc NULL doesn't need be allocated
+					k = 0;
+					while(strcmp(parsed[i] + k, "\0") != 0){ //Finds the length of each parsed input
+						k++;
+					}
+            		    		new_parsed[i] = malloc(sizeof(char*) * (k + 1));
+					memcpy(new_parsed[i], parsed[i],(k + 1));
+        			}
+				new_parsed[j] = NULL; // For exec
+                        	fputs(usrInput, filePtr); // adding for history
+				historyCounter++;
+				pid_t pid = execute_command(new_parsed);
+				if(pid == 0){ //Used to make sure that all memory is cleared from the fork() in method
+					loop = 1;
+					fclose(filePtr);
+				}
+                        	if(strcmp(new_parsed[0], "history") == 0
+				&& strcmp(new_parsed[1], "\0") == 0 && pid != 0){ //
+                                	pid_t child = fork();
+					char sub[10];
+					sprintf(sub,"-%d", historyCounter);
+					if(child == 0){
+						if(historyCounter < 10){// uses tail to get last 10 from file or sub if less than 10 inpuyts 
+							execlp("tail", "tail", sub, ".421sh", NULL);
+						} else {
+							execlp("tail", "tail", "-10", ".421sh", NULL);
+						}
+						loop = 1;
+						fclose(filePtr);
+					} else {
+						wait(NULL);
+					}
+                        	}
+				//Frees everything
+				free_var(&parsed, strlen(usrInput));
+				free_var(&new_parsed, j + 1);
+				free(usrInput);
+			}
 		}
 	}
-
-	for(i = 0; i < strlen(usrInput); i++){
-        	free(parsed[i]); // Frees Parsed Array
-		parsed[i] = NULL;
-        }
-	free(parsed);
-	parsed = NULL;
-	free(usrInput); //Frees UserInput
-	usrInput = NULL;
-	return 0;
 }
 
 
@@ -229,15 +240,10 @@ void parse_command(char* usrInput, char*** parsed){
    /*
     ENTER YOUR CODE HERE
     */
-	//remove spaces
-	//parse string into array
-	//check if first is exit or proc
-	//return array
-
 	int i = 0; // index of iteration
 	int j = 0; // Size of word
 	int k = 0; // index in array
-	int l = 0;
+	int l = 0; // checks if first word (sometimes behaves oddly if it is)
 	while(i < strlen(usrInput) - 1){
 		if(isspace(usrInput[i]) != 0){
 			if(j != 0 && l == 0){
@@ -248,8 +254,6 @@ void parse_command(char* usrInput, char*** parsed){
 				l = 1;
 			}
 			if(j != 0){
-				//strncpy(substring, usrInput + (i - j), j);
-				//strncpy((*parsed)[k], substring); //copies parsed info to substring & adds nullptr
 				memcpy((*parsed)[k], usrInput + (i - j), j);
                			(*parsed)[k][j + 1] = '\0';
 				k++; // increments index
@@ -263,9 +267,7 @@ void parse_command(char* usrInput, char*** parsed){
 	}
 
 	if(j != 0){ //what if it ends without a space
-		//strncpy(substring, usrInput + (i - j), j);
-        	//strcpy((*parsed)[k], substring); // copies parsed info to substring & adds nullptr
-		memcpy((*parsed)[k], usrInput + (i - j), j);
+      		memcpy((*parsed)[k], usrInput + (i - j), j);
 		(*parsed)[k][j] = '\0';
 		k++; // increments index
         	j = 0; // restarts size counter
@@ -280,7 +282,7 @@ fork a process and execute the parsed command inside the child process
 */
 
 /*execute_command()*/
-void execute_command(char* new_parsed[]){
+int execute_command(char* new_parsed[]){
     /*
     Functions you may need: 
         fork(), execvp(), waitpid(), and any other useful function
@@ -289,18 +291,22 @@ void execute_command(char* new_parsed[]){
     /*
     ENTER YOUR CODE HERE
     */
-	//execute command
-	//(somehow) use fork to create a process
-
 	pid_t pid = fork();
 	if(pid < 0){
 		printf("Fork Failed\n");
 	} else if(pid == 0){ // 0 means child process
 		execvp(new_parsed[0], new_parsed);
-		exit(1); // exec didn't find the command
 	} else{
 		wait(NULL);
 	}
 
+	return pid;
+}
 
+void free_var(char*** new_parsed, int size){ //Used to free **
+        int i;
+        for(i = 0; i < size; i++){
+                free((*new_parsed)[i]);
+        }
+	free(*new_parsed);
 }
