@@ -14,7 +14,7 @@ description: a simple linux shell designed to perform basic linux commands
 #include <sys/wait.h>
 #include <ctype.h>
 #include "utils.h"
-
+#define _GNU_SOURCE
 /*
 In this project, you are going to implement a number of functions to 
 create a simple linux shell interface to perform basic linux commands
@@ -158,7 +158,7 @@ void user_prompt_loop(){
 			} else {
 				char** new_parsed  = (char**) malloc(sizeof(char*) * (j + 1));
        				for(i = 0; i < j; i++){ // Not j + 1 bc NULL doesn't need be allocated
-					k = 0;
+ 					k = 0;
 					while(strcmp(parsed[i] + k, "\0") != 0){ //Finds the length of each parsed input
 						k++;
 					}

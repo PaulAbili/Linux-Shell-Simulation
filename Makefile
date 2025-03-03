@@ -10,7 +10,7 @@ CC = gcc                # Compiler to use
 #  -Wall     give verbose compiler warnings
 #  -O0       do not optimize generated code
 #  -std=c99  use the C99 standard language definition
-CFLAGS = -g -Wall -O0 -std=c99
+CFLAGS = -g -Wall -O0 -std=gnu11
 
 # The LDFLAGS variable sets flags for linker
 #  -lm   says to link in libm (the math library)

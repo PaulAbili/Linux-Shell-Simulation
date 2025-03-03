@@ -18,11 +18,16 @@ Libraries used:
 #include <ctype.h>
 #include "utils.h" // Not a library another file
 
-Also note, there is a warning for the "implict declaration of function 'getline' in the discord it was mentioned that this could be fixed using #define _GNU_SOURCE
-I wasn't completely sure if this was included in the C standard library so, I didn't include it
+
 
 Build and Compile
 Build & run this program with: make run
+
+NOTE
+
+Only cat /proc/... is supported
+not /proc/... 
+Additionally no spaces
 
 User-Space Drivers
 Driver used:main.c 
