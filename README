@@ -1,4 +1,4 @@
-Project 1: C Shell
+C Shell
 
 Contact
 Author: Paul Abili
@@ -6,7 +6,7 @@ Campus ID:QD36016
 Email:pabili1@umbc.edu
 
 Overview
-The goal of the project was for students to create a simple c shell. Students are introduced to using fork() and the exec() family of functions. The file .421sh is stored with project1-SmilingSupernova (the main directory)
+Created a simple c shell. Used the fork() and exec() family of functions the file .421sh is stored within the main directory
 
 Installation and Setup
 Libraries used:
@@ -16,9 +16,7 @@ Libraries used:
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
-#include "utils.h" // Not a library another file
-
-
+#include "utils.h" 
 
 Build and Compile
 Build & run this program with: make run
@@ -30,7 +28,7 @@ not /proc/...
 Additionally no spaces
 
 User-Space Drivers
-Driver used:main.c 
+Driver used :main.c 
 This is the only file used in this program, this is the renamed template file
 
 Testing
@@ -72,8 +70,6 @@ The file would be written as
 3
 Which didn’t make any sense to me, I spent hours working on it and it was super confusing.
 I ended up running the -tail command using exec to circumvent this odd issue, because I was at a loss on how to fix it, and I had spent way to much time working on it
-
-I also didn't understand the point of the provided helper functions so I implemented everything without them
 
 References
 External Sources
