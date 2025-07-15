@@ -77,13 +77,11 @@ I spent a lot of time googling answers for questions so it would be impossible t
 The main source: geeksforgeeks.org // It was so much easier to understand how these functions worked from this page rather than reading the c documentation, often those documentations pages were super long and didn’t have a lot of examples(if any)
 I looked at a lot of pages: strlen, strcpy, strncpy, file handling, exec family of functions,fprint, fgets, fputs and fputc, sprintf, fseek, differences between a, a+, w, w+, r, r+, how to read line by line in , exit abort and assert functions, isspace in c, memcpy, pointer to pointer, fork, c arrays, making your own linux shell, c arrays, wait system call in c, realloc, strcat, null pointer in c, git diff, derefence pointer in c
 
-Videos I watched
+Videos
 https://www.youtube.com/watch?v=HEEzZ7fA9Oo&t=243s
 https://www.youtube.com/watch?v=HqADRbshBF4
 https://www.youtube.com/watch?v=Lx5r2XQvpVA
 https://www.youtube.com/watch?v=2ybLD6_2gKM
-
-I love this man
 https://www.youtube.com/watch?v=cex9XrZCU14&t=1s
 https://www.youtube.com/watch?v=tcYo6hipaSA
 https://www.youtube.com/watch?v=OVFEWSP7n8c
