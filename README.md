@@ -2,9 +2,9 @@
 
 ### Contact
 
-**Author:** Paul Abili 
-**Campus ID:** QD36016
-**Email:** pabili1@umbc.edu
+**Author:** Paul Abili <br>
+**Campus ID:** QD36016 <br>
+**Email:** pabili1@umbc.edu <br>
 
 ### Overview
 
@@ -33,7 +33,7 @@ Additionally no spaces <br>
 
 ### User-Space Drivers
 
-Driver used :main.c <br>
+Driver used: [main.c](main.c) <br>
 This is the only file used in this program, this is the renamed template file <br>
 
 ### Testing
