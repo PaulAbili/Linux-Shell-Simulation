@@ -1,83 +1,74 @@
-C Shell
+# C Shell
 
-Contact
-Author: Paul Abili
-Campus ID:QD36016
-Email:pabili1@umbc.edu
+### Contact
 
-Overview
+**Author:** Paul Abili 
+**Campus ID:** QD36016
+**Email:** pabili1@umbc.edu
+
+### Overview
+
 Created a simple c shell. Used the fork() and exec() family of functions the file .421sh is stored within the main directory
 
-Installation and Setup
-Libraries used:
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <ctype.h>
-#include "utils.h" 
+### Installation and Setup
+#### Libraries used:
 
-Build and Compile
-Build & run this program with: make run
+#include <stdio.h><br>
+#include <stdlib.h><br>
+#include <string.h><br>
+#include <unistd.h><br>
+#include <sys/wait.h><br>
+#include <ctype.h><br>
+#include "utils.h"<br>
 
-NOTE
+### Build and Compile
 
-Only cat /proc/... is supported
-not /proc/... 
-Additionally no spaces
+Build & run this program with: make run<br>
 
-User-Space Drivers
-Driver used :main.c 
-This is the only file used in this program, this is the renamed template file
+NOTE<br>
 
-Testing
-Throughout implementation of the shell, I tested common linux commands in the my shell and compared the answer to the actual command within the vm
-Ex. ls, ls -la, pwd, nano main.c, etc.
-Also non commands ex: 1, 2, 3, 4, 5, 6, 7, aa, papas, etc.
+Only cat /proc/... is supported<br>
+not /proc/... <br>
+Additionally no spaces <br>
 
-Troubleshooting
-This was a long process for me so I'll remember everything.
+### User-Space Drivers
 
-It was super difficult to read the linux manual, so using getline was a lot more difficult than it should have been.
+Driver used :main.c <br>
+This is the only file used in this program, this is the renamed template file <br>
 
-It found it difficult to anticipate how large I should make the ** (when I started it was a *[] but that soon changed)
+### Testing
 
-I didn’t understand how pass by reference worked in c ( I understood that I need to pass by reference to modify a pointer but, I didn’t understand that I needed to dereference a pointer if in functions)
+<p>I tested common linux commands in the my shell and compared the answer to the actual command within the vm<br>
+Ex. ls, ls -la, pwd, nano main.c, etc.<br>
+Also non commands ex: 1, 2, 3, 4, 5, 6, 7, aa, papas, etc.</p>
 
-I attempted to use realloc() to shrink the ** to how big it actually needed to be when parsing (it didn’t work so I simply created another ** ( back then it was a *[])
+### Troubleshooting
 
-Note on parsing, I initially started using strncpy() and strcpy(), however when it looped the second time, weird stuff started happening to the memory. Eventually after fine tuning my indexes and numbers with my algorithm, I attempted to use memcpy() and it finally worked.
+<p> It was super difficult to read the linux manual, so using getline was a lot more difficult than it should have been. <br>
 
-Because of the issues with parsing (the mem issues within the ** was not always apparent)
-It took a really long time to understand how the exec family of functions worked.
-Additionally, when looking at the example output for the parse_command method: ["ls", "-la", NULL]. I completely misread this and understood it as [“\”ls\””,  “\”-la\””,  “NULL”] which took awhile to figure out ( I really don’t understand why my brain malfunctioned)
+It found it difficult to anticipate how large I should make the ** (when I started it was a *[] but that soon changed) <br>
 
-This also added to the time it took to figure out the exec() family of functions
+Note on parsing, I initially started using strncpy() and strcpy(), however when it looped the second time, weird stuff started happening to the memory. Eventually after fine tuning my indexes and numbers with my algorithm, I attempted to use memcpy() and it finally worked. <br>
 
-Finally implementing the history command was difficult
-For some reason, my program would write to the files super oddly
-Ex. If the input was:
->> 1
->> 2
->> 3
-The file would be written as 
-1
-1
-2
-1
-2
-3
-Which didn’t make any sense to me, I spent hours working on it and it was super confusing.
-I ended up running the -tail command using exec to circumvent this odd issue, because I was at a loss on how to fix it, and I had spent way to much time working on it
+Because of the issues with parsing (the mem issues within the ** was not always apparent) <br>
+It took a really long time to understand how the exec family of functions worked. <br>
+Additionally, when looking at the example output for the parse_command method: ["ls", "-la", NULL]. <br>
 
-References
-External Sources
-I spent a lot of time googling answers for questions so it would be impossible to list every source I visited
+This also added to the time it took to figure out the exec() family of functions <br>
+
+Finally implementing the history command was difficult <br>
+For some reason, my program would write to the files super oddly <br>
+I ended up running the -tail command using exec to circumvent this odd issue</p>
+
+### References
+#### External Sources
+
+<p>I spent a lot of time googling answers for questions so it would be impossible to list every source I visited
 The main source: geeksforgeeks.org // It was so much easier to understand how these functions worked from this page rather than reading the c documentation, often those documentations pages were super long and didn’t have a lot of examples(if any)
-I looked at a lot of pages: strlen, strcpy, strncpy, file handling, exec family of functions,fprint, fgets, fputs and fputc, sprintf, fseek, differences between a, a+, w, w+, r, r+, how to read line by line in , exit abort and assert functions, isspace in c, memcpy, pointer to pointer, fork, c arrays, making your own linux shell, c arrays, wait system call in c, realloc, strcat, null pointer in c, git diff, derefence pointer in c
+I looked at a lot of pages: strlen, strcpy, strncpy, file handling, exec family of functions,fprint, fgets, fputs and fputc, sprintf, fseek, differences between a, a+, w, w+, r, r+, how to read line by line in , exit abort and assert functions, isspace in c, memcpy, pointer to pointer, fork, c arrays, making your own linux shell, c arrays, wait system call in c, realloc, strcat, null pointer in c, git diff, derefence pointer in c </p>
 
-Videos
+#### Videos
+
 https://www.youtube.com/watch?v=HEEzZ7fA9Oo&t=243s
 https://www.youtube.com/watch?v=HqADRbshBF4
 https://www.youtube.com/watch?v=Lx5r2XQvpVA
